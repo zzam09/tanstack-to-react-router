@@ -9,6 +9,13 @@ export function useNotifications() {
   });
 }
 
+export function useNotificationById(id: string) {
+  return useQuery({
+    queryKey: ["notification", id],
+    queryFn: () => api.getNotificationById(id),
+  });
+}
+
 export function useMarkAllRead() {
   const qc = useQueryClient();
   return useMutation({

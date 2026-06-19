@@ -10,6 +10,15 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { useSignOut } from "@/hooks/useAuth";
+import { useNotifications } from "@/hooks/useNotifications";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const LOGO_URL =
   "https://upload.wikimedia.org/wikipedia/commons/2/2e/SpaceX_logo_black.svg";
@@ -21,9 +30,15 @@ interface HeaderProps {
 export function Header({ showBack = false }: HeaderProps) {
   const navigate = useNavigate();
   const { theme, toggle } = useTheme();
+  const { data: notificationsData } = useNotifications();
   const [open, setOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const signOut = useSignOut();
+
+  const unreadCount = notificationsData?.filter((n) => n.unread).length ?? 0;
+  const badgeText =
+    unreadCount === 0 ? "" : unreadCount > 99 ? "99+" : String(unreadCount);
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -64,7 +79,28 @@ export function Header({ showBack = false }: HeaderProps) {
           </Link>
         )}
 
-        <div className="relative" ref={menuRef}>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => navigate("/notifications")}
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-bright)] bg-[var(--surface)] text-[var(--text)] transition hover:opacity-80"
+            aria-label="Notifications"
+          >
+            <Bell size={18} />
+            {unreadCount > 0 && (
+              <>
+                <div
+                  className="absolute right-0 top-0 h-2 w-2 rounded-full bg-[#ef4444] animate-pulse"
+                  aria-hidden="true"
+                />
+                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#ef4444] text-[10px] font-bold text-white">
+                  {badgeText}
+                </span>
+              </>
+            )}
+          </button>
+
+          <div className="relative" ref={menuRef}>
           <button
             type="button"
             onClick={() => setOpen((o) => !o)}
@@ -102,10 +138,9 @@ export function Header({ showBack = false }: HeaderProps) {
               </button>
               <button
                 type="button"
-                onClick={async () => {
+                onClick={() => {
                   setOpen(false);
-                  await signOut.mutateAsync();
-                  navigate("/login");
+                  setLogoutDialogOpen(true);
                 }}
                 className="flex w-full items-center gap-3 px-4 py-3.5 text-left text-[13px] font-medium text-[#ef4444] transition hover:bg-white/5"
               >
@@ -114,7 +149,29 @@ export function Header({ showBack = false }: HeaderProps) {
               </button>
             </div>
           )}
+          </div>
         </div>
+
+        <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogTitle>Sign Out</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to sign out? You&apos;ll need to log in again to access your account.
+            </AlertDialogDescription>
+            <div className="flex justify-end gap-3">
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={async () => {
+                  await signOut.mutateAsync();
+                  navigate("/login");
+                }}
+                className="bg-[#ef4444] hover:bg-[#dc2626]"
+              >
+                Sign Out
+              </AlertDialogAction>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </header>
   );

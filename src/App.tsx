@@ -10,7 +10,9 @@ import Profile from './routes/Profile'
 import Upgrade from './routes/Upgrade'
 import History from './routes/History'
 import Notifications from './routes/Notifications'
+import NotificationDetail from './components/notifications/NotificationDetail'
 import Payment from './routes/Payment'
+import PaymentDetail from './components/payment/PaymentDetail'
 import Processing from './routes/Processing'
 import Login from './routes/Auth/Login'
 import AdminIndex from './routes/Admin/Index'
@@ -49,7 +51,9 @@ export function App() {
             <Route path="/upgrade" element={<Upgrade />} />
             <Route path="/history" element={<History />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/notifications/:id" element={<NotificationDetail />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/history/:id" element={<PaymentDetail />} />
             <Route path="/processing" element={<Processing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin" element={<AdminIndex />} />

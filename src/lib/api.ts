@@ -193,6 +193,14 @@ export async function getNotifications(): Promise<AppNotification[]> {
   ];
 }
 
+export async function getNotificationById(
+  id: string
+): Promise<AppNotification | null> {
+  await wait(200);
+  const notifications = await getNotifications();
+  return notifications.find((n) => n.id === id) ?? null;
+}
+
 export async function markAllNotificationsRead() {
   await wait(200);
   return { ok: true };
@@ -227,6 +235,12 @@ export async function getHistory(): Promise<PaymentRecord[]> {
       reference: "PMT-44H8MQ",
     },
   ];
+}
+
+export async function getPaymentById(id: string): Promise<PaymentRecord | null> {
+  await wait(200);
+  const payments = await getHistory();
+  return payments.find((p) => p.id === id) ?? null;
 }
 
 // ── Admin ───────────────────────────────────────────────────────────────────
