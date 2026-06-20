@@ -1,21 +1,8 @@
-import {
-  Award,
-  Bell,
-  Calendar,
-  CircleDollarSign,
-  Sparkles,
-} from "lucide-react";
-import type { AppNotification, NotificationKind } from "@/types/notification";
+import { useNavigate } from "react-router-dom";
+import type { AppNotification } from "@/types/notification";
+import { NOTIFICATION_ICONS } from "@/config/constants";
 
-const ICONS: Record<NotificationKind, React.ComponentType<{ size?: number }>> = {
-  upgrade: Sparkles,
-  badge: Award,
-  event: Calendar,
-  profit: CircleDollarSign,
-  system: Bell,
-};
-
-const ICON_CLASS: Record<NotificationKind, string> = {
+const ICON_CLASS: Record<string, string> = {
   upgrade: "bg-[rgba(197,160,89,0.1)] text-[var(--gold)]",
   badge: "bg-[rgba(16,185,129,0.1)] text-[var(--success)]",
   event: "bg-[rgba(96,165,250,0.1)] text-[#60a5fa]",
@@ -23,34 +10,37 @@ const ICON_CLASS: Record<NotificationKind, string> = {
   system: "bg-white/5 text-[var(--muted)]",
 };
 
-export function NotificationItem({ n }: { n: AppNotification }) {
-  const Icon = ICONS[n.kind];
+export function NotificationItem({ notification }: { notification: AppNotification }) {
+  const navigate = useNavigate();
+  const Icon = NOTIFICATION_ICONS[notification.kind];
+  
   return (
     <div
+      onClick={() => navigate(`/notifications/${notification.id}`)}
       className={[
-        "flex items-start gap-4 rounded-[20px] border bg-[var(--surface)] p-5 transition active:scale-[0.99] animate-slide-up",
-        n.unread
+        "flex items-start gap-4 rounded-[20px] border bg-[var(--surface)] p-5 transition active:scale-[0.99] animate-slide-up cursor-pointer hover:bg-white/[0.04]",
+        notification.unread
           ? "border-[var(--border-bright)] bg-white/[0.02]"
           : "border-[var(--border)]",
       ].join(" ")}
     >
       <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${ICON_CLASS[n.kind]}`}
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${ICON_CLASS[notification.kind]}`}
       >
         <Icon size={18} />
       </div>
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex items-center gap-2 text-sm font-semibold text-[var(--text)]">
-          {n.title}
-          {n.unread && (
+          {notification.title}
+          {notification.unread && (
             <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--gold)]" />
           )}
         </div>
         <div className="mb-2 text-[13px] leading-[1.5] text-[var(--muted)]">
-          {n.message}
+          {notification.message}
         </div>
         <div className="font-mono-data text-[11px] text-[var(--muted)] opacity-60">
-          {n.time}
+          {notification.time}
         </div>
       </div>
     </div>

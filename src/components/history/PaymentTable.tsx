@@ -1,47 +1,40 @@
+import { useNavigate } from "react-router-dom";
 import type { PaymentRecord } from "@/types/payment";
-
-const STATUS_COLOR: Record<PaymentRecord["status"], string> = {
-  Approved: "text-[var(--success)]",
-  Pending: "text-[var(--pending)]",
-  Rejected: "text-[#ef4444]",
-};
+import { PAYMENT_ICON, STATUS_COLOR } from "@/config/constants";
 
 export function PaymentTable({ rows }: { rows: PaymentRecord[] }) {
+  const navigate = useNavigate();
+
   if (rows.length === 0) {
     return (
-      <div className="rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-10 text-center text-sm text-[var(--muted)]">
+      <div className="text-center text-sm text-muted-foreground py-10">
         No payment history yet.
       </div>
     );
   }
+
+  const Icon = PAYMENT_ICON;
+
   return (
-    <div className="flex flex-col gap-3">
+    <div className="w-full">
       {rows.map((p) => (
-        <div
-          key={p.id}
-          className="rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-5 animate-slide-up"
-        >
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--muted)]">
-                {p.date}
-              </div>
-              <div className="mt-1 text-base font-semibold text-[var(--text)]">
-                {p.tier}
-              </div>
+        <div key={p.id} onClick={() => navigate(`/history/${p.id}`)} className="flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors">
+          <div className="shrink-0 mt-0.5">
+            <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center">
+              <Icon className="w-4 h-4 text-muted-foreground" />
             </div>
-            <strong className="font-mono-data text-lg">{p.amount}</strong>
           </div>
-          <div className="flex items-center justify-between border-t border-[var(--border)] pt-3 text-[11px]">
-            <span className="font-mono-data text-[var(--muted)]">
-              {p.reference}
-            </span>
-            <span
-              className={`font-bold uppercase tracking-wider ${STATUS_COLOR[p.status]}`}
-            >
-              {p.status}
-            </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium truncate">{p.tier}</span>
+              <span className={`text-sm font-semibold shrink-0 ${STATUS_COLOR[p.status] ?? "text-foreground"}`}>
+                {p.amount}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">{p.date}</p>
+            <div className="mt-3 border-t border-border/40" />
           </div>
+          <div className="shrink-0 text-muted-foreground text-lg leading-none mt-1">›</div>
         </div>
       ))}
     </div>
