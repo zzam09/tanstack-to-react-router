@@ -55,7 +55,7 @@ export function NotificationSheet({
                   onClick={() => handleNotificationClick(n.id)}
                   className="text-left transition hover:opacity-80"
                 >
-                  <NotificationItem n={n} />
+                  <NotificationItem notification={n} />
                 </button>
               ))}
             </div>
